@@ -28,7 +28,7 @@ export class Pm2Manager {
 			pm2.list((e2, processlist) => {
 				if (e2) throw e;
 				this.cache.clear();
-				const filtered = processlist.filter((v) => !!v.pm_id);
+				const filtered = processlist.filter((v) => typeof v.pm_id !== 'undefined');
 				if (!filtered.length) throw new Error('No pm2 process running');
 				else for (const process of filtered) this.cache.set(process.pm_id!, formatPM2Data(process) as Pm2Data);
 				pm2.disconnect();
