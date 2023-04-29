@@ -1,46 +1,40 @@
-import { Proc, ProcessDescription } from "pm2";
+import { Proc } from "pm2";
 export interface MemoryData {
-    pm2Raw: number,
-    megaBytes: number,
-    formatted: string
+    pm2Raw: number;
+    megaBytes: number;
+    formatted: string;
 }
-
 export interface CpuData {
-    percent: number,
-    formatted: string
+    percent: number;
+    formatted: string;
 }
-
 export interface UptimeData {
-    startTimestamp: number,
-    startDate: Date,
-    pm2Raw: number,
-    upSinceSec: number,
+    startTimestamp: number;
+    startDate: Date;
+    pm2Raw: number;
+    upSinceSec: number;
 }
-
 export interface Pm2ManagerOptions {
     /** Number in ms | at least 5000 to make it work, set it to 0 to disable it */
     updateCacheInterval: number;
 }
-
 type ProcessStatus = 'online' | 'stopping' | 'stopped' | 'launching' | 'errored' | 'one-launch-status';
-
 export interface Pm2Data {
-    pm2Id: number,
-    pm2Name: string,
-    status: ProcessStatus,
-    processId: number,
-    memoryUsage: MemoryData,
-    cpuUsage: CpuData,
-    execPath: string, // from pm2.env
-    cwd: string, // from pm2.env
-    logOutputPath: string,
-    logErrorsPath: string,
-    execMode: "fork" | "cluster", // from pm2.env
-    uptime: UptimeData,
-    pm2Env: Partial<Proc> & Partial<Pm2Env> & Record<string, any>
+    pm2Id: number;
+    pm2Name: string;
+    status: ProcessStatus;
+    processId: number;
+    memoryUsage: MemoryData;
+    cpuUsage: CpuData;
+    execPath: string;
+    cwd: string;
+    logOutputPath: string;
+    logErrorsPath: string;
+    execMode: "fork" | "cluster";
+    uptime: UptimeData;
+    pm2Env: Partial<Proc> & Partial<Pm2Env> & Record<string, any>;
 }
 export type pm2Id = number;
-
 interface Pm2Env {
     /**
      * The working directory of the process.
@@ -77,3 +71,4 @@ interface Pm2Env {
      */
     pm_exec_path?: string;
 }
+export {};

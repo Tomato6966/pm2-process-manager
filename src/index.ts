@@ -1,11 +1,11 @@
 import { connect, list, disconnect, ProcessDescription, restart, stop, flush, delete as pm2Delete } from "pm2";
-import { pm2Id, pm2Data } from "./types";
+import { pm2Id, Pm2Data, Pm2ManagerOptions } from "./types";
 import { readFile, access, constants } from "fs/promises";
 
-export class pm2Manager {
-    cache = new Map<pm2Id, pm2Data>()
-    constructor(data: { updateCacheInterval: number }) {
-        this.cache = new Map<pm2Id, pm2Data>();
+export class Pm2Manager {
+    public cache = new Map<pm2Id, Pm2Data>()
+    constructor(public data: Pm2ManagerOptions) {
+        this.cache = new Map<pm2Id, Pm2Data>();
 
         if (!data?.updateCacheInterval || typeof data.updateCacheInterval !== "number") throw new Error("No option 'updateCacheInterval' of type 'number' was given")
         if (data.updateCacheInterval !== 0 && data.updateCacheInterval < 5000) throw new Error("'updateCacheInterval' must at least be 5000ms")
@@ -21,12 +21,12 @@ export class pm2Manager {
      */
     cachePm2Data() {
         connect((e) => {
-            if (e) return console.error(e)
+            if (e) throw e;
             list((e2, processlist) => {
-                if (e2) return console.error(e2)
+                if (e2) throw e;
                 this.cache.clear();
                 const filtered = processlist.filter(v => !!v.pm_id);
-                if (!filtered.length) console.error("No pm2 process running");
+                if (!filtered.length) throw new Error("No pm2 process running");
                 else for (const process of filtered) this.cache.set(process.pm_id!, formatPM2Data(process));
                 disconnect();
             })
@@ -38,7 +38,7 @@ export class pm2Manager {
      * @returns {number | undefined} processID if found from the Cache!
      */
     findId(process: string | number): number | undefined {
-        return [...this.cache.values()].find(c => (typeof process === "string" && c.pm2Name.toLowerCase().replace(" ", "") === process.replace(" ", "").toLowerCase()) || (typeof process === "number" && process == c.pm2Id))?.pm2Id
+        return [...this.cache.values()].find(c => (typeof process === "string" && c.pm2Name.toLowerCase().replace(" ", "") === process.replace(" ", "").toLowerCase()) || (typeof process === "number" && process === c.pm2Id))?.pm2Id
     }
     /**
      * Restart a Specific Pm2 Process
@@ -49,8 +49,8 @@ export class pm2Manager {
         return new Promise((res, rej) => {
             connect(e => {
                 if(e) return rej(e);
-                restart(process, (e) => {
-                    if(e) return rej(e);
+                restart(process, (e2) => {
+                    if (e2) return rej(e2);
                     if (this.cache.has(this.findId(process)!)) {
                         const data = this.cache.get(this.findId(process)!)!;
                         data.status = "launching";
@@ -71,8 +71,8 @@ export class pm2Manager {
         return new Promise((res, rej) => {
             connect(e => {
                 if (e) return rej(e);
-                stop(process, (e) => {
-                    if (e) return rej(e);
+                stop(process, (e2) => {
+                    if (e2) return rej(e2);
                     if (this.cache.has(this.findId(process)!)) {
                         const data = this.cache.get(this.findId(process)!)!;
                         data.status = "stopped";
@@ -93,8 +93,8 @@ export class pm2Manager {
         return new Promise((res, rej) => {
             connect(e => {
                 if (e) return rej(e);
-                flush(process, (e) => {
-                    if (e) return rej(e);
+                flush(process, (e2) => {
+                    if (e2) return rej(e2);
                     if (this.cache.has(this.findId(process)!)) {
                         const data = this.cache.get(this.findId(process)!)!;
                         this.cache.set(this.findId(process)!, data);
@@ -111,13 +111,13 @@ export class pm2Manager {
      * @returns {Promise<string>}
      */
     async delete(process: string | number) {
-        new Promise((res, rej) => {
+        return new Promise((res, rej) => {
             connect(e => {
                 if (e) return rej(e);
-                pm2Delete(process, (e) => {
-                    if (e) return rej(e);
+                pm2Delete(process, (e2) => {
+                    if (e2) return rej(e2);
                     if (this.cache.has(this.findId(process)!)) {
-                        this.cache.delete(this.findId(process)!)!;
+                        this.cache.delete(this.findId(process)!);
                     }
                     disconnect();
                     return res("Delete that Process and the datas of it's cache");
@@ -132,7 +132,8 @@ export class pm2Manager {
      * @returns {Promise<string>}
      */
     async getLogs(process: string | number, maxLines: number | undefined) {
-        let errorLogs = "", outputLogs = "";
+        let errorLogs = "";
+        let outputLogs = "";
 
         const data = this.cache.get(this.findId(process)!);
         if(!data) throw new Error("Could not find that process in the cache, either run cachePm2Data, or wait for the autocacher!")
@@ -155,7 +156,6 @@ export class pm2Manager {
         }
     }
 } 
-export default pm2Manager;
 
 function formatPM2Data(data:Partial<ProcessDescription>) {
     const cpuRounded = Math.floor(data.monit?.cpu||0 * 100) / 100;
@@ -186,12 +186,13 @@ function formatPM2Data(data:Partial<ProcessDescription>) {
             formatted: formatBytes(data.monit?.memory || NaN)
         },
         pm2Env: { ...(data.pm2_env||{}) }
-    } as pm2Data;
+    } as Pm2Data;
 }
 
 function formatBytes(bytes:number, decimals = 2) {
     if (!+bytes) return '0 Bytes'
-    const k = 1024, dm = decimals < 0 ? 0 : decimals;
+    const k = 1024;
+    const dm = decimals < 0 ? 0 : decimals;
     const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
 
     const i = Math.floor(Math.log(bytes) / Math.log(k));
