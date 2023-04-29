@@ -63,33 +63,33 @@ const data2 = pm2.cache.get(11) // or with process Id
 - **Most important Datas are __parsed__ and __easily accessable__**, here is an example! 
 
 > Example output when getting the cache data, if it's available 
-```json
+```js
 {
-  "pm2Id": 11,
-  "pm2Name": "Project Great",
-  "status": "online",
-  "processId": 1472,
-  "memoryUsage": {
-    "pm2Raw": 90128384,
-    "megaBytes": 85.95,
-    "formatted": '85.95 MB',
+  pm2Id: 11,
+  pm2Name: "Project Great",
+  status: "online",
+  processId: 1472,
+  memoryUsage: {
+    pm2Raw: 90128384,
+    megaBytes: 85.95,
+    formatted: "85.95 MB",
   },
-  "cpuUsage": {
-    "percent": 0.7,
-    "formatted": "70%"
+  cpuUsage: {
+    percent: 0.7,
+    formatted: "70%"
   },
-  "execPath": "/usr/bin/node", 
-  "cwd": "/home/project/great", 
-  "logOutputPath": '/root/.pm2/logs/Project-Great-out.log',
-  "logErrorsPath": '/root/.pm2/logs/Project-Great-error.log',
-  "execMode": 'fork', // 'fork' | 'cluster'
-  "uptime": {
-    "pm2Raw": 1682751244258,
-    "startTimestamp": 1682751244258,
-    "startDate": 2023-04-29T06:54:04.258Z,
-    "upSinceSec": 8847.245
+  execPath: "/usr/bin/node", 
+  cwd: "/home/project/great", 
+  logOutputPath: "/root/.pm2/logs/Project-Great-out.log",
+  logErrorsPath: "/root/.pm2/logs/Project-Great-error.log",
+  execMode: "fork", // 'fork' | 'cluster'
+  uptime: {
+    pm2Raw: 1682751244258,
+    startTimestamp: 1682751244258,
+    startDate: 2023-04-29T06:54:04.258Z,
+    upSinceSec: 8847.245
   },
-  "pm2Env": { ... },
+  pm2Env: {  },
 }
 ```
 
