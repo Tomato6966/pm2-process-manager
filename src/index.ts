@@ -1,11 +1,11 @@
 import * as pm2 from 'pm2';
-import { pm2Id, Pm2Data, Pm2ManagerOptions } from './types';
+import { Pm2Id, Pm2Data, Pm2ManagerOptions } from './types';
 import { readFile, access, constants } from 'fs/promises';
 
 export class Pm2Manager {
-	public cache = new Map<pm2Id, Pm2Data>();
+	public cache = new Map<Pm2Id, Pm2Data>();
 	constructor(public data: Pm2ManagerOptions) {
-		this.cache = new Map<pm2Id, Pm2Data>();
+		this.cache = new Map<Pm2Id, Pm2Data>();
 
 		if (!data?.updateCacheInterval || typeof data.updateCacheInterval !== 'number')
 			throw new Error("No option 'updateCacheInterval' of type 'number' was given");
@@ -30,7 +30,7 @@ export class Pm2Manager {
 				this.cache.clear();
 				const filtered = processlist.filter((v) => !!v.pm_id);
 				if (!filtered.length) throw new Error('No pm2 process running');
-				else for (const process of filtered) this.cache.set(process.pm_id!, formatPM2Data(process));
+				else for (const process of filtered) this.cache.set(process.pm_id!, formatPM2Data(process) as Pm2Data);
 				pm2.disconnect();
 			});
 		});
@@ -170,7 +170,11 @@ export class Pm2Manager {
 	}
 }
 
-function formatPM2Data(data: Partial<pm2.ProcessDescription>) {
+export function formatPM2Data(
+	data: Partial<pm2.ProcessDescription> | Partial<pm2.ProcessDescription>[],
+): Pm2Data | Pm2Data[] {
+	if (Array.isArray(data)) return data.map((v) => formatPM2Data(v)) as Pm2Data[];
+
 	const cpuRounded = Math.floor((data.monit?.cpu || 0) * 100) / 100;
 
 	return {
@@ -202,7 +206,7 @@ function formatPM2Data(data: Partial<pm2.ProcessDescription>) {
 	} as Pm2Data;
 }
 
-function formatBytes(bytes: number, decimals = 2, noString = false) {
+export function formatBytes(bytes: number, decimals = 2, noString = false) {
 	if (!+bytes) return '0 Bytes';
 	const k = 1024;
 	const dm = decimals < 0 ? 0 : decimals;
@@ -212,7 +216,8 @@ function formatBytes(bytes: number, decimals = 2, noString = false) {
 	if (noString) return parseFloat((bytes / Math.pow(k, i)).toFixed(dm));
 	return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
 }
-async function existFile(path: string) {
+
+export async function existFile(path: string) {
 	return access(path, constants.F_OK)
 		.then((v) => true)
 		.catch(() => false);

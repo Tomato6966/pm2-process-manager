@@ -34,7 +34,7 @@ export interface Pm2Data {
     uptime: UptimeData;
     pm2Env: Partial<Proc> & Partial<Pm2Env> & Record<string, any>;
 }
-export type pm2Id = number;
+export type Pm2Id = number;
 interface Pm2Env {
     /**
      * The working directory of the process.

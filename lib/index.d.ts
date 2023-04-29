@@ -1,3 +1,4 @@
+import * as pm2 from 'pm2';
 import { Pm2Data, Pm2ManagerOptions } from './types';
 export declare class Pm2Manager {
     data: Pm2ManagerOptions;
@@ -49,3 +50,6 @@ export declare class Pm2Manager {
         output: string;
     }>;
 }
+export declare function formatPM2Data(data: Partial<pm2.ProcessDescription> | Partial<pm2.ProcessDescription>[]): Pm2Data | Pm2Data[];
+export declare function formatBytes(bytes: number, decimals?: number, noString?: boolean): string | number;
+export declare function existFile(path: string): Promise<boolean>;
