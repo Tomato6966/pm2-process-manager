@@ -1,6 +1,6 @@
 {
   "name": "pm2-process-manager",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "Manage pm2 process(es) with style and ease. Cache the pm2 process(es) Datas and access them at any time to get almost live stats!",
   "main": "lib/index.js",
   "scripts": {
