@@ -1,0 +1,33 @@
+{
+  "name": "pm2-process-manager",
+  "version": "1.1.4",
+  "description": "Manage pm2 process(es) with style and ease. Cache the pm2 process(es) Datas and access them at any time to get almost live stats!",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Tomato6966/pm2-process-manager.git"
+  },
+  "keywords": [
+    "pm2",
+    "process-manager",
+    "pm2-cache",
+    "pm2-manager"
+  ],
+  "author": "Tomato6966",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Tomato6966/pm2-process-manager/issues"
+  },
+  "homepage": "https://github.com/Tomato6966/pm2-process-manager#readme",
+  "devDependencies": {
+    "tsc": "^2.0.4",
+    "typescript": "^5.0.4"
+  },
+  "dependencies": {
+    "pm2": "^5.3.0"
+  }
+}
