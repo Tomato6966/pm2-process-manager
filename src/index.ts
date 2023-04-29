@@ -191,27 +191,25 @@ function formatPM2Data(data: Partial<pm2.ProcessDescription>) {
 		},
 		cpuUsage: {
 			percent: cpuRounded,
-			formatted: `${
-				cpuRounded < 10 ? `0${cpuRounded}` : `${cpuRounded}`
-			}%`,
+			formatted: `${cpuRounded < 10 ? `0${cpuRounded}` : `${cpuRounded}`}%`,
 		},
 		memoryUsage: {
 			pm2Raw: data.monit?.memory,
-            megaBytes: formatBytes(data.monit?.memory || NaN, 2, true),
+			megaBytes: formatBytes(data.monit?.memory || NaN, 2, true),
 			formatted: formatBytes(data.monit?.memory || NaN, 2, false),
 		},
 		pm2Env: { ...(data.pm2_env || {}) },
 	} as Pm2Data;
 }
 
-function formatBytes(bytes: number, decimals = 2, noString=false) {
+function formatBytes(bytes: number, decimals = 2, noString = false) {
 	if (!+bytes) return '0 Bytes';
 	const k = 1024;
 	const dm = decimals < 0 ? 0 : decimals;
 	const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
 
 	const i = Math.floor(Math.log(bytes) / Math.log(k));
-    if (noString) return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)); 
+	if (noString) return parseFloat((bytes / Math.pow(k, i)).toFixed(dm));
 	return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
 }
 async function existFile(path: string) {
