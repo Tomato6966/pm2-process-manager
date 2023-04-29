@@ -1,4 +1,4 @@
-import { Proc } from "pm2";
+import { Proc } from 'pm2';
 export interface MemoryData {
     pm2Raw: number;
     megaBytes: number;
@@ -30,7 +30,7 @@ export interface Pm2Data {
     cwd: string;
     logOutputPath: string;
     logErrorsPath: string;
-    execMode: "fork" | "cluster";
+    execMode: 'fork' | 'cluster';
     uptime: UptimeData;
     pm2Env: Partial<Proc> & Partial<Pm2Env> & Record<string, any>;
 }

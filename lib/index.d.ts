@@ -1,4 +1,4 @@
-import { Pm2Data, Pm2ManagerOptions } from "./types";
+import { Pm2Data, Pm2ManagerOptions } from './types';
 export declare class Pm2Manager {
     data: Pm2ManagerOptions;
     cache: Map<number, Pm2Data>;
